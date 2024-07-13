@@ -1,0 +1,7 @@
+home_index:
+    path: /home
+    controller: App\Controller\HomeController::index
+
+root_index:
+    path: /animal/inicio
+    controller: App\Controller\AnimalesController::index
