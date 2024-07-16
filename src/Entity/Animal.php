@@ -94,4 +94,18 @@ class Animal
     }
 
 
+    public function getTamano(): ?string
+    {
+        return $this->tamano;
+    }
+
+    public function setTamano(string $tamano): self
+    {
+        $this->tamano = $tamano;
+
+        return $this;
+    }
+
+
+
 }

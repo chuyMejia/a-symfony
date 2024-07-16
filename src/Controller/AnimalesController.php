@@ -13,8 +13,6 @@ class AnimalesController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->render('animales/index.html.twig', [
-            'controller_name' => 'AnimalesController',
-        ]);
+        return new Response('data saved if:');
     }
 }

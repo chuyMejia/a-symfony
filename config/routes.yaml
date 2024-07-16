@@ -4,4 +4,16 @@ home_index:
 
 root_index:
     path: /animal/inicio
-    controller: App\Controller\AnimalesController::index
+    controller: App\Controller\AnimalController::index
+
+animal_index:
+    path: /animal/index
+    controller: App\Controller\AnimalController::index
+
+animal_save:
+    path: /animal/save
+    controller: App\Controller\AnimalController::save
+
+animal_detail:
+    path: /animal/{id}
+    controller: App\Controller\AnimalController::animal   
