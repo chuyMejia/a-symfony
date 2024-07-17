@@ -23,6 +23,14 @@ class AnimalController extends AbstractController
           //cosulta
           $animales = $animal_repo->findAll();
 
+          $animal = $animal_repo->findBy(
+            //TODOSL REGISTROS QUE COINCIDAN  findBy    SOLO UN REGISTRO findOneBy
+            ['tipo' => 'pollo2'], // Criterios de búsqueda
+            ['id' => 'ASC']       // Opcional: Array de ordenación
+        );
+
+          var_dump($animal);
+
           //return new Response('data saved if:');
   
         return $this->render('animal/index.html.twig', [
@@ -58,7 +66,8 @@ class AnimalController extends AbstractController
     }
 
 
-    public function animal($id){
+    //public function animal(Animal $animal){
+        public function animal($id){
 
         //load repository
 
@@ -76,6 +85,14 @@ class AnimalController extends AbstractController
    
 
         return new Response('hi from action animal:'.$mensaje);
+
+    }
+
+    public function update($id){
+        //cargar doctrine
+//66252846113
+
+        //cargar entity manager 
 
     }
 

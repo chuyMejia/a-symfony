@@ -12,5 +12,17 @@
     <h1>Hello {{ controller_name }}! ✅</h1>
 
   {{dump(animales)}}
+
+  {% for animal in animales %}
+   
+     <ul>
+        <li>{{animal.tipo}}</li>
+         <li>{{animal.color}}</li>
+         <li> {{animal.raza}}</li>
+         <li>{{animal.tamano}} </li>  
+     </ul>
+  {% endfor %}
+
+
 </div>
 {% endblock %}
