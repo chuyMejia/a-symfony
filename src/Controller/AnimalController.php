@@ -2,13 +2,51 @@
 
 namespace App\Controller;
 
+use App\Entity\Animal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Animal;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
+
+
 
 class AnimalController extends AbstractController
 {
+
+
+    public function crearAnimal(){
+
+
+        $animal = new animal();
+        $form = $this->createFormBuilder($animal)
+                     ->setAction($this->generateUrl('animal_save'))
+                     ->setMethod('POST')
+                     ->add('tipo',TextType::class,[
+                        'label'=>'Type of animal'
+                        ])
+                     ->add('color',TextType::class)
+                     ->add('raza',TextType::class)
+                     ->add('tamano',TextType::class)
+                     ->add('submit',SubmitType::class,[
+                        'label'=>'Create Animal',
+                        'attr'=>['class'=>'btn btn-success']
+                     ])
+                     ->getForm();
+        return $this->render('animal/crear-animal.html.twig',[
+            'form' =>$form->createView()
+        ]);
+
+
+
+    }
+
+
+
+
     /**
      * @Route("/animal", name="app_animal")
      */
@@ -16,6 +54,8 @@ class AnimalController extends AbstractController
     {
 
           //load repository
+
+          $em = $this->getDoctrine()->getManager();
 
           
 
@@ -29,9 +69,48 @@ class AnimalController extends AbstractController
             ['id' => 'ASC']       // Opcional: Array de ordenación
         );
 
-          var_dump($animal);
+          // QUERY BUILDER CON SYMFONY
+        $qb = $animal_repo->createQueryBuilder('a')
+            ->andWhere('a.tipo = :tipo')
+            ->setParameter('tipo', 'gato')
+            ->orderBy('a.id','ASC')
+            ->getQuery();
+        $resultset = $qb->getResult();
 
-          //return new Response('data saved if:');
+
+
+
+
+
+        // Puedes utilizar var_dump para depurar (aunque no es recomendado en producción)
+         
+
+
+            //DQL
+            $dql="select a from App\Entity\Animal a where a.tipo = 'gato' ";
+            $query =$em->createQuery($dql);
+            $resultset = $query->execute();
+            //var_dump($resultset);
+
+
+            //Consultas SQL
+
+            $conn = $this->getDoctrine()->getConnection();
+            $sql = 'SELECT * FROM animales ORDER BY  id DESC';
+            $prepare = $conn->prepare($sql);
+            $prepare->execute();
+            $resultset = $prepare->fetchAll();
+            var_dump($resultset);
+
+
+        //repositorio
+
+        $animals = $animal_repo->getAnimalsOrderId('DESC');
+        var_dump($animals);
+
+
+
+         
   
         return $this->render('animal/index.html.twig', [
             'controller_name' => 'AnimalController','animales'=>$animales
@@ -88,12 +167,56 @@ class AnimalController extends AbstractController
 
     }
 
-    public function update($id){
-        //cargar doctrine
-//66252846113
+    public function update(int $id, EntityManagerInterface $em): Response
+    {
+        // Cargar el repositorio de Animal
+        $animalRepo = $em->getRepository(Animal::class);
 
-        //cargar entity manager 
+        // Buscar el animal por ID
+        $animal = $animalRepo->find($id);
 
+        // Verificar si el animal fue encontrado
+        if (!$animal) {
+            $mensaje = 'El animal no existe';
+        } else {
+            // Actualizar los valores del animal
+            $animal->setTipo('Perro_ ' . $id);
+            $animal->setColor('verde');
+            $animal->setRaza('verde');
+            $animal->setTamano('verde');
+
+            // Persistir y guardar los cambios
+            $em->flush();
+
+            $mensaje = 'Dato actualizado: ' . $animal->getTipo() . ' con ID: ' . $animal->getId();
+        }
+
+        return new Response($mensaje);
+    }
+
+    /**
+     * @Route("/animal/delete/{id}", name="animal_delete")
+     */
+    public function delete(int $id, EntityManagerInterface $em): Response
+    {
+        // Cargar el repositorio de Animal
+        $animalRepo = $em->getRepository(Animal::class);
+
+        // Buscar el animal por ID
+        $animal = $animalRepo->find($id);
+
+        // Verificar si el animal fue encontrado
+        if ($animal) {
+            // Eliminar el animal
+            $em->remove($animal);
+            $em->flush();
+
+            $mensaje = 'Animal borrado correctamente';
+        } else {
+            $mensaje = 'Animal no borrado, no se encontró el animal';
+        }
+
+        return new Response($mensaje);
     }
 
 }
