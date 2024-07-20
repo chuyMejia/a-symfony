@@ -19,20 +19,21 @@ class AnimalController extends AbstractController
 
 
     public function crearAnimal(){
-
+        //crear un formulario 
+//78-010-494 4339089
 
         $animal = new animal();
         $form = $this->createFormBuilder($animal)
-                     ->setAction($this->generateUrl('animal_save'))
-                     ->setMethod('POST')
-                     ->add('tipo',TextType::class,[
+                     ->setAction($this->generateUrl('animal_save'))//ruta para guardar
+                     ->setMethod('POST')//metodo del action
+                     ->add('tipo',TextType::class,[//input
                         'label'=>'Type of animal'
                         ])
                      ->add('color',TextType::class)
                      ->add('raza',TextType::class)
                      ->add('tamano',TextType::class)
-                     ->add('submit',SubmitType::class,[
-                        'label'=>'Create Animal',
+                     ->add('submit',SubmitType::class,[//boton
+                        'label'=>'Create Animal',//atributo
                         'attr'=>['class'=>'btn btn-success']
                      ])
                      ->getForm();
