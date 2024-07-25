@@ -13,6 +13,7 @@ animal_index:
 animal_save:
     path: /animal/save
     controller: App\Controller\AnimalController::save
+    methods: [POST]
 
 animal_detail:
     path: /animal/{id}
@@ -30,3 +31,8 @@ animal_delete:
 crear_animal:
     path: /crear-animal
     controller: App\Controller\AnimalController::crearAnimal  
+
+
+validar_email:
+    path: /validar-email/{email}
+    controller: App\Controller\AnimalController::validarEmail  

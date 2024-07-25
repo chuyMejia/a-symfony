@@ -1,5 +1,11 @@
 <h1>form de symfony</h1>
 
+{% for message in app.session.flashbag().get('mensaje') %}
+
+<strong style='color:green'>{{message}}</strong>
+
+{% endfor %}
+
 {{ form_start(form)}}
 {{form_widget(form)}}
 {{form_end(form)}}

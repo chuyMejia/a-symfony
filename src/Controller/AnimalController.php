@@ -10,7 +10,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Form\AnimalType;
+
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Constraints\Email;
 
 
 
@@ -18,31 +25,60 @@ class AnimalController extends AbstractController
 {
 
 
-    public function crearAnimal(){
-        //crear un formulario 
-//78-010-494 4339089
 
-        $animal = new animal();
-        $form = $this->createFormBuilder($animal)
-                     ->setAction($this->generateUrl('animal_save'))//ruta para guardar
-                     ->setMethod('POST')//metodo del action
-                     ->add('tipo',TextType::class,[//input
-                        'label'=>'Type of animal'
-                        ])
-                     ->add('color',TextType::class)
-                     ->add('raza',TextType::class)
-                     ->add('tamano',TextType::class)
-                     ->add('submit',SubmitType::class,[//boton
-                        'label'=>'Create Animal',//atributo
-                        'attr'=>['class'=>'btn btn-success']
-                     ])
-                     ->getForm();
-        return $this->render('animal/crear-animal.html.twig',[
-            'form' =>$form->createView()
+    public function validarEmail($email){
+
+       $validator = Validation::createValidator();
+       $errores = $validator->validate($email,[
+            new Email()
+       ]);
+
+       if(count($errores) != 0){
+
+        echo "data no valid (email)";
+
+        foreach($errores as $error )
+        echo '<br>'.$error->getMessage().'<br>';
+
+       }else{
+        echo 'email is correct';
+       }
+
+
+        die();
+
+
+
+    }
+
+    public function crearAnimal(Request $request) {
+        // Crear un nuevo objeto Animal
+        $animal = new Animal();
+    
+        // Crear el formulario utilizando AnimalType y el objeto Animal
+        $form = $this->createForm(AnimalType::class, $animal);
+    
+        // Manejar la solicitud HTTP
+        $form->handleRequest($request);
+    
+        // Verificar si el formulario ha sido enviado y es válido
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persistir el objeto Animal en la base de datos
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($animal);
+            $em->flush();
+    
+            // Crear y mostrar un mensaje flash
+            $this->addFlash('mensaje', 'Registro correcto');
+    
+            // Redirigir a la ruta 'crear_animal' (ajusta según tu configuración de rutas)
+            return $this->redirectToRoute('crear_animal');
+        }
+    
+        // Renderizar la plantilla de creación de animal con el formulario
+        return $this->render('animal/crear-animal.html.twig', [
+            'form' => $form->createView(),
         ]);
-
-
-
     }
 
 
@@ -119,10 +155,11 @@ class AnimalController extends AbstractController
     }
 
     public function save(){
+     
+     
+     
         //guardar en tabla
-
         $entityManager = $this->getDoctrine()->getManager();
-
         $animal = new Animal();
         $animal->setTipo('pollo');
         $animal->setColor('blanco');
@@ -142,6 +179,16 @@ class AnimalController extends AbstractController
 
         echo "<h1>ghghgjj</h1>";
         return new Response('data saved if:'.$animal->getId());
+
+    }
+
+
+    public function save235(Request $request){
+
+      // var_dump($request->get('form')); 
+       
+
+
 
     }
 
